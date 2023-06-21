@@ -35,7 +35,7 @@ public class PythiaSQL {
                 return null;
             }, null);
 
-            return connection.executeQuery("SELECT * FROM " + tableName, resultSet -> {
+           var result = connection.executeQuery("SELECT * FROM " + tableName, resultSet -> {
                 List<DatabaseEntry> values = new ArrayList<>();
                 int[] id = new int[]{0};
                 while (resultSet.next()) {
@@ -52,6 +52,11 @@ public class PythiaSQL {
                 tables.add(table);
                 return table;
             }, null);
+
+           if(result == null) {
+               System.err.println("[ERROR] Table " + tableName + " not found!");
+           }
+           return result;
         });
     }
 }

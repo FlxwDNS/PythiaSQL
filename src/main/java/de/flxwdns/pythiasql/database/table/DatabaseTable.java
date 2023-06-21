@@ -33,18 +33,53 @@ public final class DatabaseTable {
         return false;
     }
 
+    /**
+     * Method: createEntry(String[] columns, Object[] values)
+     *
+     * Creates a new entry in the database table. It accepts two parameters: `columns` and `values`.
+     *
+     * @param columns (String[]): An array of column names to associate with the new entry.
+     * @param values (Object[]): An array of values to be assigned to the corresponding columns.
+     *
+     * Example usage:
+     *
+     * String[] columns = {"column1", "column2", "column3"};
+     * Object[] values = {value1, value2, value3};
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * table.createEntry(columns, values);
+     *
+     * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
+     *       Additionally, take care to avoid potential SQL injections by properly sanitizing or handling the values in the database query.
+     */
     public DatabaseTable createEntry(String[] columns, Object[] values) {
         String[] stringArray = new String[values.length];
         for (int i = 0; i < values.length; i++) {
             stringArray[i] = "'" + values[i].toString() + "'";
         }
-        String joinedString = String.join(", ", stringArray);
-
-        System.out.println(joinedString + " " + "`" + String.join("`, `", columns) + "`");
-        connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", columns) + "`" + ") VALUES (" + joinedString + ")");
+        connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", columns) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
         return this;
     }
 
+    /**
+     * Method: removeEntry(String[] columns, Object[] values)
+     *
+     * Removes an entry from the database table based on the specified columns and values.
+     *
+     * @param columns (String[]): An array of column names to identify the entry to be removed.
+     * @param values (Object[]): An array of values corresponding to the columns to identify the entry.
+     *
+     * Example usage:
+     *
+     * String[] columns = {"column1", "column2"};
+     * Object[] values = {value1, value2};
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * table.removeEntry(columns, values);
+     *
+     * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
+     *       Additionally, take care to properly sanitize or handle the values in the database query to prevent SQL injection vulnerabilities.
+     */
     public void removeEntry(String[] columns, Object[] values) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("DELETE FROM ").append(tableName).append(" WHERE ");
@@ -56,11 +91,23 @@ public final class DatabaseTable {
                 queryBuilder.append(" AND ");
             }
         }
-
-        String query = queryBuilder.toString();
-        connection.executeUpdate(query);
+        connection.executeUpdate(queryBuilder.toString());
     }
 
+    /**
+     * Method: getFirst()
+     *
+     * Retrieves the first occurrence of a DatabaseEntry from the entries list.
+     *
+     * @return List<DatabaseEntry>: A list containing the first occurrence of a DatabaseEntry.
+     *
+     * Example usage:
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * List<DatabaseEntry> firstEntries = table.getFirst();
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
     public List<DatabaseEntry> getFirst() {
         List<DatabaseEntry> tempList = new ArrayList<>();
         entries.stream().findFirst().ifPresent(tempList::add);
@@ -73,6 +120,22 @@ public final class DatabaseTable {
         return tempList;
     }
 
+    /**
+     * Method: getEntriesById(int id)
+     *
+     * Retrieves a list of DatabaseEntry objects from the entries list based on the specified ID.
+     *
+     * @param id (int): The ID value used to filter the DatabaseEntry objects.
+     * @return List<DatabaseEntry>: A list containing the DatabaseEntry objects matching the specified ID.
+     *
+     * Example usage:
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * int targetId = 123; // Specify the ID value
+     * List<DatabaseEntry> entriesById = table.getEntriesById(targetId);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
     public List<DatabaseEntry> getEntriesById(int id) {
         return entries.stream().filter(it -> it.getId() == id).collect(Collectors.toList());
     }
