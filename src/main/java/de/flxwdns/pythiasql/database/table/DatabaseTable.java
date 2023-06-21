@@ -22,15 +22,15 @@ public final class DatabaseTable {
 
     /**
      * Method: isEntryExists(String[] columns, Object[] values)
-     *
+     * <p>
      * Checks if an entry exists in the database table based on the specified columns and values.
      *
      * @param columns (String[]): An array of column names used to identify the entry.
      * @param values (Object[]): An array of values corresponding to the columns used for identification.
      * @return boolean: True if an entry with the specified columns and values exists, false otherwise.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * String[] targetColumns = {"column1", "column2"}; // Specify the column names
      * Object[] targetValues = {value1, value2}; // Specify the corresponding values
@@ -53,20 +53,20 @@ public final class DatabaseTable {
 
     /**
      * Method: createEntry(String[] columns, Object[] values)
-     *
+     * <p>
      * Creates a new entry in the database table. It accepts two parameters: `columns` and `values`.
      *
      * @param columns (String[]): An array of column names to associate with the new entry.
      * @param values (Object[]): An array of values to be assigned to the corresponding columns.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * String[] columns = {"column1", "column2", "column3"};
      * Object[] values = {value1, value2, value3};
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * table.createEntry(columns, values);
-     *
+     * <p>
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to avoid potential SQL injections by properly sanitizing or handling the values in the database query.
      */
@@ -81,20 +81,20 @@ public final class DatabaseTable {
 
     /**
      * Method: removeEntry(String[] columns, Object[] values)
-     *
+     * <p>
      * Removes an entry from the database table based on the specified columns and values.
      *
      * @param columns (String[]): An array of column names to identify the entry to be removed.
      * @param values (Object[]): An array of values corresponding to the columns to identify the entry.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * String[] columns = {"column1", "column2"};
      * Object[] values = {value1, value2};
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * table.removeEntry(columns, values);
-     *
+     * <p>
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to properly sanitize or handle the values in the database query to prevent SQL injection vulnerabilities.
      */
@@ -114,13 +114,13 @@ public final class DatabaseTable {
 
     /**
      * Method: getFirst()
-     *
+     * <p>
      * Retrieves the first occurrence of a DatabaseEntry from the entries list.
      *
      * @return List<DatabaseEntry>: A list containing the first occurrence of a DatabaseEntry.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * List<DatabaseEntry> firstEntries = table.getFirst();
      *
@@ -140,14 +140,14 @@ public final class DatabaseTable {
 
     /**
      * Method: getEntriesById(int id)
-     *
+     * <p>
      * Retrieves a list of DatabaseEntry objects from the entries list based on the specified ID.
      *
      * @param id (int): The ID value used to filter the DatabaseEntry objects.
      * @return List<DatabaseEntry>: A list containing the DatabaseEntry objects matching the specified ID.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * int targetId = 123; // Specify the ID value
      * List<DatabaseEntry> entriesById = table.getEntriesById(targetId);
@@ -160,14 +160,14 @@ public final class DatabaseTable {
 
     /**
      * Method: filter(DatabaseEntryFilter filter)
-     *
+     * <p>
      * Filters the entries in the database table based on the provided filter.
      *
      * @param filter (DatabaseEntryFilter): The filter used to specify the criteria for filtering the entries.
      * @return DatabaseTable: A new DatabaseTable instance containing the filtered entries.
-     *
+     * <p>
      * Example usage:
-     *
+     * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
      * DatabaseEntryFilter filter = new DatabaseEntryFilter(); // Example filter object
      * DatabaseTable filteredTable = table.filter(filter);
