@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -18,6 +19,19 @@ public final class DatabaseTable {
 
     private final String tableName;
     private final List<DatabaseEntry> entries;
+
+    public boolean isEntryExists(String[] columns, Object[] values) {
+        for (String column : columns) {
+            for (Object value : values) {
+                for (DatabaseEntry entry : entries) {
+                    if(Objects.equals(entry.getColumnName(), column) && entry.getValue().equals(value)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     public DatabaseTable createEntry(String[] columns, Object[] values) {
         String[] stringArray = new String[values.length];
