@@ -20,6 +20,24 @@ public final class DatabaseTable {
     private final String tableName;
     private final List<DatabaseEntry> entries;
 
+    /**
+     * Method: isEntryExists(String[] columns, Object[] values)
+     *
+     * Checks if an entry exists in the database table based on the specified columns and values.
+     *
+     * @param columns (String[]): An array of column names used to identify the entry.
+     * @param values (Object[]): An array of values corresponding to the columns used for identification.
+     * @return boolean: True if an entry with the specified columns and values exists, false otherwise.
+     *
+     * Example usage:
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * String[] targetColumns = {"column1", "column2"}; // Specify the column names
+     * Object[] targetValues = {value1, value2}; // Specify the corresponding values
+     * boolean entryExists = table.isEntryExists(targetColumns, targetValues);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
     public boolean isEntryExists(String[] columns, Object[] values) {
         for (String column : columns) {
             for (Object value : values) {
@@ -140,6 +158,22 @@ public final class DatabaseTable {
         return entries.stream().filter(it -> it.getId() == id).collect(Collectors.toList());
     }
 
+    /**
+     * Method: filter(DatabaseEntryFilter filter)
+     *
+     * Filters the entries in the database table based on the provided filter.
+     *
+     * @param filter (DatabaseEntryFilter): The filter used to specify the criteria for filtering the entries.
+     * @return DatabaseTable: A new DatabaseTable instance containing the filtered entries.
+     *
+     * Example usage:
+     *
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * DatabaseEntryFilter filter = new DatabaseEntryFilter(); // Example filter object
+     * DatabaseTable filteredTable = table.filter(filter);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
     public DatabaseTable filter(DatabaseEntryFilter filter) {
         List<Integer> allowedIds = new ArrayList<>();
         List<DatabaseEntry> temp = new ArrayList<>(entries.stream().filter(entry -> {
