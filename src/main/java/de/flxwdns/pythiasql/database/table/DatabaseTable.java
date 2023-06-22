@@ -2,6 +2,7 @@ package de.flxwdns.pythiasql.database.table;
 
 import de.flxwdns.pythiasql.database.connect.DatabaseConnectHandler;
 import de.flxwdns.pythiasql.database.filter.DatabaseEntryFilter;
+import de.flxwdns.pythiasql.database.result.DataResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -162,20 +163,20 @@ public final class DatabaseTable {
     }
 
     /**
-     * Method: getFirst()
+     * Method: firstAsResult()
      * <p>
      * Retrieves the first occurrence of a DatabaseEntry from the entries list.
      *
-     * @return List<DatabaseEntry>: A list containing the first occurrence of a DatabaseEntry.
+     * @return DataResult: A data result containing the first occurrence of a DatabaseEntry.
      * <p>
      * Example usage:
      * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * List<DatabaseEntry> firstEntries = table.getFirst();
+     * DataResult dataResult = table.firstAsResult();
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
-    public List<DatabaseEntry> getFirst() {
+    public DataResult firstAsResult() {
         List<DatabaseEntry> tempList = new ArrayList<>();
         entries.stream().findFirst().ifPresent(tempList::add);
 
@@ -184,7 +185,7 @@ public final class DatabaseTable {
                 tempList.add(entry);
             }
         });
-        return tempList;
+        return new DataResult(tempList);
     }
 
     /**
@@ -251,21 +252,13 @@ public final class DatabaseTable {
     }
 
     /**
-     * Method: getFirstValue(DatabaseEntryFilter filter)
+     * Method: getFirstValue(String column)
      * <p>
-     * Filters the entries in the database table based on the provided filter.
-     *
-     * @param column (String): The column used to specify the column for filtering and getting the first entry.
-     * @return Object: A new Object containing the value from column.
+     * Is deprecated please do not use this method.
      * <p>
-     * Example usage:
-     * <p>
-     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * String column = "columnName"
-     * Object object = table.getFirstValue(column);
-     *
-     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     * Use now firstAsResult()
      */
+    @Deprecated
     public Object getFirstValue(String column) {
         return entries.stream().filter(entry -> entry.getColumnName().equalsIgnoreCase(column)).findFirst().map(DatabaseEntry::getValue).orElse(null);
     }
