@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -22,34 +21,67 @@ public final class DatabaseTable {
     private final List<DatabaseEntry> entries;
 
     /**
-     * Method: isEntryExists(String[] columns, Object[] values)
+     * Method: isEntryExists(Map<String, Object> values)
      * <p>
      * Checks if an entry exists in the database table based on the specified columns and values.
      *
-     * @param columns (String[]): An array of column names used to identify the entry.
-     * @param values (Object[]): An array of values corresponding to the columns used for identification.
+     * @param values (Map<String, Object>): An array of values corresponding to the columns used for identification.
      * @return boolean: True if an entry with the specified columns and values exists, false otherwise.
      * <p>
      * Example usage:
      * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * String[] targetColumns = {"column1", "column2"}; // Specify the column names
-     * Object[] targetValues = {value1, value2}; // Specify the corresponding values
-     * boolean entryExists = table.isEntryExists(targetColumns, targetValues);
+     * Map<String, Object> targetValues = Map.of("uuid", "49d12a56-f1e9-4918-a521-fcd4d7c838b9"); // Specify the values
+     * boolean entryExists = table.isEntryExists(targetValues);
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
     public boolean isEntryExists(Map<String, Object> values) {
-        for (String column : values.keySet().stream().toList()) {
-            for (Object value : values.entrySet().stream().toList()) {
-                for (DatabaseEntry entry : entries) {
-                    if(Objects.equals(entry.getColumnName(), column) && entry.getValue().equals(value)) {
-                        return true;
-                    }
-                }
-            }
+        return values.entrySet().stream().anyMatch(set -> entries.stream().anyMatch(entry -> entry.getColumnName().equals(set.getKey()) && entry.getValue().equals(set.getValue())));
+    }
+
+    /**
+     * Method: ifEntryExists(Map<String, Object> values)
+     * <p>
+     * Checks if an entry exists in the database table based on the specified columns and values.
+     *
+     * @param values (Map<String, Object>): An array of values corresponding to the columns used for identification.
+     * <p>
+     * Example usage:
+     * <p>
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * Map<String, Object> targetValues = Map.of("uuid", "49d12a56-f1e9-4918-a521-fcd4d7c838b9"); // Specify the values
+     * table.ifEntryExists(targetValues, runnable);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
+    public void ifEntryExists(Map<String, Object> values, Runnable runnable) {
+        if(values.entrySet().stream().anyMatch(set -> entries.stream().anyMatch(entry -> entry.getColumnName().equals(set.getKey()) && entry.getValue().equals(set.getValue())))) {
+            runnable.run();
         }
-        return false;
+    }
+
+    /**
+     * Method: ifEntryExistsOrElse(Map<String, Object> values)
+     * <p>
+     * Checks if an entry exists in the database table based on the specified columns and values.
+     *
+     * @param values (Map<String, Object>): An array of values corresponding to the columns used for identification.
+     * <p>
+     * Example usage:
+     * <p>
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * Map<String, Object> targetValues = Map.of("uuid", "49d12a56-f1e9-4918-a521-fcd4d7c838b9"); // Specify the values
+     * table.ifEntryExistsOrElse(targetValues, runnable, runnable);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
+    public void ifEntryExistsOrElse(Map<String, Object> values, Runnable ifPresent, Runnable ifNotPresent) {
+        if(values.entrySet().stream().anyMatch(set -> entries.stream().anyMatch(entry -> entry.getColumnName().equals(set.getKey()) && entry.getValue().equals(set.getValue())))) {
+            ifNotPresent.run();
+        } else {
+            ifNotPresent.run();
+        }
     }
 
     /**
