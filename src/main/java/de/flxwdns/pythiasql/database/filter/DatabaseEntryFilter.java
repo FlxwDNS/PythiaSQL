@@ -8,8 +8,8 @@ public class DatabaseEntryFilter {
     private Integer id;
     private String columnName;
 
-    private Object value;
     private String column;
+    private Object value;
 
     /**
      * Method: withId(Integer id)
@@ -79,9 +79,9 @@ public class DatabaseEntryFilter {
      * DatabaseEntryFilter filter = new DatabaseEntryFilter();
      * filter.withValueAndColumn("John", "name");
      */
-    public DatabaseEntryFilter withValueAndColumn(Object value, String column) {
-        this.value = value;
+    public DatabaseEntryFilter withColumnAndValue(String column, Object value) {
         this.column = column;
+        this.value = value;
         return this;
     }
 }
