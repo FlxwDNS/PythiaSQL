@@ -6,6 +6,8 @@ PythiaSQL is a Java library that provides a convenient way to interact with a My
 Before getting started, make sure you have the following:
 - Java Development Kit (JDK) installed on your system.
 - A MySQL database server running with the necessary credentials (host, port, database name, username, and password).
+- A Maven or Gradle Projekt with configuration.
+- The PythiaSQL Library imported from https://jitpack.io/#FlxwDNS/PythiaSQL/4419f6bc18
 
 ## Enabling the Database Connection
 To enable the database connection, you need to call the `enable` method from the `PythiaSQL` class. This method takes the following parameters:
@@ -39,7 +41,10 @@ String tableName = "mytable";
 DatabaseTable table = PythiaSQL.getTable(tableName);
 
 // Inserting a new row
-table.createEntry(List.of("columnOne", "columnTwo"), new Object[]{"String", 0});
+table.createEntry(Map.of(
+        "columnOne", "valueOne",
+        "columnTwo", "valueTwo"
+));
 ```
 
 ### Remove Data from a Table
@@ -50,7 +55,10 @@ String tableName = "mytable";
 DatabaseTable table = PythiaSQL.getTable(tableName);
 
 // Removing a existing row
-table.removeEntry(new String[]{"columnOne", "columnTwo"}, new Object[]{"String", 0});
+table.removeEntry(Map.of(
+        "columnOne", "valueOne",
+        "columnTwo", "valueTwo"
+));
 ```
 
 ### Retrieving a DatabaseTable Object
