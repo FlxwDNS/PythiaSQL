@@ -3,6 +3,7 @@ package de.flxwdns.pythiasql.database.connect;
 import lombok.Getter;
 import java.sql.*;
 
+@SuppressWarnings("unused")
 public final class DatabaseConnectHandler {
     @Getter
     private Connection connection;
