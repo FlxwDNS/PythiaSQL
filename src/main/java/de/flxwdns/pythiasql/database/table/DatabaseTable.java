@@ -146,9 +146,12 @@ public final class DatabaseTable {
 
         try {
             connection.executeUpdate(queryBuilder.toString());
-            for (Map.Entry<String, Object> set : conditions.entrySet()) {
-                entries.removeIf(entry ->
-                        entry.getValue().equals(set.getValue()) && entry.getColumnName().equals(set.getKey()));
+            for (Map.Entry<String, Object> conditionEntry : conditions.entrySet()) {
+                for (DatabaseEntry entry : entries) {
+                    if (entry.getValue().equals(conditionEntry.getValue()) && entry.getColumnName().equals(conditionEntry.getKey())) {
+                        entry.setValue(values.get(entry.getColumnName()));
+                    }
+                }
             }
             future.complete(null);
         } catch (Exception e) {

@@ -1,12 +1,12 @@
 package de.flxwdns.pythiasql.database.table;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class DatabaseEntry {
     private final int id;
-    private final Object value;
+    private Object value;
     private final String columnName;
 }
