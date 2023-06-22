@@ -119,6 +119,47 @@ public final class DatabaseTable {
         return CompletableFuture.completedFuture(null);
     }
 
+    public CompletableFuture<Void> editEntry(Map<String, Object> conditions, Map<String, Object> values) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("UPDATE ").append(tableName).append(" SET ");
+
+        int index = 0;
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+            if (index < values.size() - 1) {
+                queryBuilder.append(", ");
+            }
+            index++;
+        }
+
+        queryBuilder.append(" WHERE ");
+        index = 0;
+        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+            queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+            if (index < conditions.size() - 1) {
+                queryBuilder.append(" AND ");
+            }
+            index++;
+        }
+
+        try {
+            connection.executeUpdate(queryBuilder.toString());
+            for (Map.Entry<String, Object> set : conditions.entrySet()) {
+                entries.removeIf(entry ->
+                        entry.getValue().equals(set.getValue()) && entry.getColumnName().equals(set.getKey()));
+            }
+            future.complete(null);
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error while editing entry in table " + tableName + ": " + e);
+            e.printStackTrace();
+            future.completeExceptionally(e);
+        }
+
+        return future;
+    }
+
     /**
      * Method: removeEntry(Map<String, Object> conditions)
      * <p>
