@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
@@ -48,8 +49,18 @@ public class DataResult {
         return (BigDecimal) getObject(column);
     }
 
+    public UUID getUUID(String column) {
+        return (UUID) getObject(column);
+    }
+
+    /**
+     * Method: getBytes(String column)
+     * <p>
+     * Is deprecated please do not use this method now.
+     * <p>
+     * The method is currently not implemented.
+     */
     @Deprecated
-    /* Not implemented yet */
     public byte[] getBytes(String column) {
         return new byte[0];
     }
