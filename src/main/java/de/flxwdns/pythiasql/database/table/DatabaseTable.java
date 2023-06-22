@@ -9,10 +9,12 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public final class DatabaseTable {
     @Getter(AccessLevel.NONE)
     private final DatabaseConnectHandler connection;
@@ -38,7 +40,7 @@ public final class DatabaseTable {
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
-    public boolean isEntryExists(String[] columns, Object[] values) {
+    public boolean isEntryExists(List<String> columns, List<Object> values) {
         for (String column : columns) {
             for (Object value : values) {
                 for (DatabaseEntry entry : entries) {
@@ -70,13 +72,19 @@ public final class DatabaseTable {
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to avoid potential SQL injections by properly sanitizing or handling the values in the database query.
      */
-    public DatabaseTable createEntry(String[] columns, Object[] values) {
-        String[] stringArray = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-            stringArray[i] = "'" + values[i].toString() + "'";
+    public CompletableFuture<Void> createEntry(List<String> columns, List<Object> values) {
+        String[] stringArray = new String[values.toArray().length];
+        for (int i = 0; i < values.toArray().length; i++) {
+            stringArray[i] = "'" + values.toArray()[i].toString() + "'";
         }
-        connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", columns) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
-        return this;
+        try {
+            connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", columns.toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error while creating entry in table " + tableName + ": " + e);
+            e.printStackTrace();
+            return CompletableFuture.failedFuture(e);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -98,18 +106,25 @@ public final class DatabaseTable {
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to properly sanitize or handle the values in the database query to prevent SQL injection vulnerabilities.
      */
-    public void removeEntry(String[] columns, Object[] values) {
+    public CompletableFuture<Void> removeEntry(String[] columns, Object[] values) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("DELETE FROM ").append(tableName).append(" WHERE ");
 
         for (int i = 0; i < columns.length; i++) {
             queryBuilder.append(columns[i]).append(" = '").append(values[i].toString()).append("'");
-
             if (i < columns.length - 1) {
                 queryBuilder.append(" AND ");
             }
         }
-        connection.executeUpdate(queryBuilder.toString());
+
+        try {
+            connection.executeUpdate(queryBuilder.toString());
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error while removing entry in table " + tableName + ": " + e);
+            e.printStackTrace();
+            return CompletableFuture.failedFuture(e);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

@@ -129,11 +129,9 @@ public final class DatabaseConnectHandler {
      * String query = "INSERT INTO mytable (column1, column2) VALUES ('value1', 'value2')"; // Specify the SQL query
      * handler.executeUpdate(query);
      */
-    public void executeUpdate(String query) {
+    public void executeUpdate(String query) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.executeUpdate();
-        } catch (SQLException exception) {
-            exception.printStackTrace();
         }
     }
 }
