@@ -56,7 +56,7 @@ public final class DatabaseTable {
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
     public void ifEntryExists(Map<String, Object> values, Runnable runnable) {
-        if(values.entrySet().stream().anyMatch(set -> entries.stream().anyMatch(entry -> entry.getColumnName().equals(set.getKey()) && entry.getValue().equals(set.getValue())))) {
+        if(isEntryExists(values)) {
             runnable.run();
         }
     }
@@ -77,8 +77,8 @@ public final class DatabaseTable {
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
     public void ifEntryExistsOrElse(Map<String, Object> values, Runnable ifPresent, Runnable ifNotPresent) {
-        if(values.entrySet().stream().anyMatch(set -> entries.stream().anyMatch(entry -> entry.getColumnName().equals(set.getKey()) && entry.getValue().equals(set.getValue())))) {
-            ifNotPresent.run();
+        if(isEntryExists(values)) {
+            ifPresent.run();
         } else {
             ifNotPresent.run();
         }
