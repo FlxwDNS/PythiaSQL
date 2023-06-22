@@ -17,6 +17,10 @@ public class DataResult {
         return (String) getObject(column);
     }
 
+    public UUID getUUID(String column) {
+        return UUID.fromString(getString(column));
+    }
+
     public boolean getBoolean(String column) {
         return (Boolean) getObject(column);
     }
@@ -47,10 +51,6 @@ public class DataResult {
 
     public BigDecimal getBigDecimal(String column, int scale) {
         return (BigDecimal) getObject(column);
-    }
-
-    public UUID getUUID(String column) {
-        return (UUID) getObject(column);
     }
 
     /**
