@@ -26,7 +26,7 @@ public class Main {
         String database = "mydatabase";
         String user = "myuser";
         String password = "mypassword";
-
+        
         PythiaSQL.enable(host, port, database, user, password);
     }
 }
@@ -39,7 +39,7 @@ String tableName = "mytable";
 DatabaseTable table = PythiaSQL.getTable(tableName);
 
 // Inserting a new row
-table.createEntry(new String[]{"columnOne", "columnTwo"}, new Object[]{"String", 0});
+table.createEntry(List.of("columnOne", "columnTwo"), new Object[]{"String", 0});
 ```
 
 ### Remove Data from a Table

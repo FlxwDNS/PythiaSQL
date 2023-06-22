@@ -6,9 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -40,9 +38,9 @@ public final class DatabaseTable {
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
-    public boolean isEntryExists(List<String> columns, List<Object> values) {
-        for (String column : columns) {
-            for (Object value : values) {
+    public boolean isEntryExists(Map<String, Object> values) {
+        for (String column : values.keySet().stream().toList()) {
+            for (Object value : values.entrySet().stream().toList()) {
                 for (DatabaseEntry entry : entries) {
                     if(Objects.equals(entry.getColumnName(), column) && entry.getValue().equals(value)) {
                         return true;
@@ -58,27 +56,25 @@ public final class DatabaseTable {
      * <p>
      * Creates a new entry in the database table. It accepts two parameters: `columns` and `values`.
      *
-     * @param columns (String[]): An array of column names to associate with the new entry.
-     * @param values (Object[]): An array of values to be assigned to the corresponding columns.
+     * @param values (Map<String, Object>): An map of column names and values to associate with the new entry.
      * <p>
      * Example usage:
      * <p>
-     * String[] columns = {"column1", "column2", "column3"};
-     * Object[] values = {value1, value2, value3};
+     * Map<String, Object> values = Map.of("ColumnName", false);
      * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * table.createEntry(columns, values);
+     * table.createEntry(values);
      * <p>
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to avoid potential SQL injections by properly sanitizing or handling the values in the database query.
      */
-    public CompletableFuture<Void> createEntry(List<String> columns, List<Object> values) {
-        String[] stringArray = new String[values.toArray().length];
-        for (int i = 0; i < values.toArray().length; i++) {
-            stringArray[i] = "'" + values.toArray()[i].toString() + "'";
-        }
+    public CompletableFuture<Void> createEntry(Map<String, Object> values) {
+        String[] stringArray = values.entrySet()
+                .stream()
+                .map(entry -> "'" + entry.getValue() + "'")
+                .toArray(String[]::new);
         try {
-            connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", columns.toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
+            connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", values.keySet().toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
         } catch (Exception e) {
             System.err.println("[ERROR] Error while creating entry in table " + tableName + ": " + e);
             e.printStackTrace();
@@ -88,33 +84,33 @@ public final class DatabaseTable {
     }
 
     /**
-     * Method: removeEntry(String[] columns, Object[] values)
+     * Method: removeEntry(Map<String, Object> conditions)
      * <p>
      * Removes an entry from the database table based on the specified columns and values.
      *
-     * @param columns (String[]): An array of column names to identify the entry to be removed.
-     * @param values (Object[]): An array of values corresponding to the columns to identify the entry.
+     * @param conditions (Map<String, Object>): An map of column names and values to identify the entry to be removed.
      * <p>
      * Example usage:
      * <p>
-     * String[] columns = {"column1", "column2"};
-     * Object[] values = {value1, value2};
+     * Map<String, Object> conditions = Map.of("ColumnName", false);
      * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * table.removeEntry(columns, values);
+     * table.removeEntry(conditions);
      * <p>
      * Note: Ensure that you correctly initialize and connect the `connection` instance to the database before using this method.
      *       Additionally, take care to properly sanitize or handle the values in the database query to prevent SQL injection vulnerabilities.
      */
-    public CompletableFuture<Void> removeEntry(String[] columns, Object[] values) {
+    public CompletableFuture<Void> removeEntry(Map<String, Object> conditions) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("DELETE FROM ").append(tableName).append(" WHERE ");
 
-        for (int i = 0; i < columns.length; i++) {
-            queryBuilder.append(columns[i]).append(" = '").append(values[i].toString()).append("'");
-            if (i < columns.length - 1) {
+        int index = 0;
+        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+            queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+            if (index < conditions.size() - 1) {
                 queryBuilder.append(" AND ");
             }
+            index++;
         }
 
         try {
