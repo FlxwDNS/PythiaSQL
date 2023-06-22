@@ -249,4 +249,24 @@ public final class DatabaseTable {
         });
         return new DatabaseTable(connection, tableName, temp);
     }
+
+    /**
+     * Method: getFirstValue(DatabaseEntryFilter filter)
+     * <p>
+     * Filters the entries in the database table based on the provided filter.
+     *
+     * @param column (String): The column used to specify the column for filtering and getting the first entry.
+     * @return Object: A new Object containing the value from column.
+     * <p>
+     * Example usage:
+     * <p>
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * String column = "columnName"
+     * Object object = table.getFirstValue(column);
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
+    public Object getFirstValue(String column) {
+        return entries.stream().filter(entry -> entry.getColumnName().equalsIgnoreCase(column)).findFirst().map(DatabaseEntry::getValue).orElse(null);
+    }
 }
