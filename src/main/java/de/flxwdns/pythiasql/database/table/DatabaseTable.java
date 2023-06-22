@@ -147,9 +147,18 @@ public final class DatabaseTable {
         try {
             connection.executeUpdate(queryBuilder.toString());
             for (Map.Entry<String, Object> conditionEntry : conditions.entrySet()) {
+                String conditionColumn = conditionEntry.getKey();
+                Object conditionValue = conditionEntry.getValue();
+
                 for (DatabaseEntry entry : entries) {
-                    if (entry.getValue().equals(conditionEntry.getValue()) && entry.getColumnName().equals(conditionEntry.getKey())) {
-                        entry.setValue(values.get(entry.getColumnName()));
+                    if (entry.getValue().equals(conditionValue) && entry.getColumnName().equals(conditionColumn)) {
+                        int entryId = entry.getId();
+
+                        for (DatabaseEntry updatedEntry : entries) {
+                            if (updatedEntry.getId() == entryId && values.containsKey(updatedEntry.getColumnName())) {
+                                updatedEntry.setValue(values.get(updatedEntry.getColumnName()));
+                            }
+                        }
                     }
                 }
             }
