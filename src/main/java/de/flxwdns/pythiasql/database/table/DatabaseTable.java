@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -69,12 +70,14 @@ public final class DatabaseTable {
      *       Additionally, take care to avoid potential SQL injections by properly sanitizing or handling the values in the database query.
      */
     public CompletableFuture<Void> createEntry(Map<String, Object> values) {
-        String[] stringArray = values.entrySet()
+        String[] stringArray = values.values()
                 .stream()
-                .map(entry -> "'" + entry.getValue() + "'")
+                .map(o -> "'" + o + "'")
                 .toArray(String[]::new);
+        int index = entries.size();
         try {
             connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", values.keySet().toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
+            values.forEach((key, value) -> entries.add(new DatabaseEntry(index, value, key)));
         } catch (Exception e) {
             System.err.println("[ERROR] Error while creating entry in table " + tableName + ": " + e);
             e.printStackTrace();
@@ -115,6 +118,9 @@ public final class DatabaseTable {
 
         try {
             connection.executeUpdate(queryBuilder.toString());
+            for (Map.Entry<String, Object> set : conditions.entrySet()) {
+                entries.removeIf(entry -> entry.getValue().equals(set.getValue()) && entry.getColumnName().equals(set.getKey()));
+            }
         } catch (Exception e) {
             System.err.println("[ERROR] Error while removing entry in table " + tableName + ": " + e);
             e.printStackTrace();
