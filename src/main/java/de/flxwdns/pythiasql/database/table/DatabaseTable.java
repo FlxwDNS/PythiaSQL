@@ -256,27 +256,21 @@ public final class DatabaseTable {
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
     public List<DataResult> allAsResult() {
-        List<DataResult> resultList = new ArrayList<>();
-        Set<Integer> processedIds = new HashSet<>();
+        Map<Integer, List<DatabaseEntry>> groupedEntries = new HashMap<>();
 
         for (DatabaseEntry entry : entries) {
-            int currentId = entry.getId();
-            if (!processedIds.contains(currentId)) {
-                List<DatabaseEntry> tempList = new ArrayList<>();
-                tempList.add(entry);
-
-                for (DatabaseEntry otherEntry : entries) {
-                    if (otherEntry.getId() == currentId && otherEntry != entry) {
-                        tempList.add(otherEntry);
-                    }
-                }
-
-                resultList.add(new DataResult(tempList));
-                processedIds.add(currentId);
-            }
+            int id = entry.getId();
+            groupedEntries.computeIfAbsent(id, k -> new ArrayList<>()).add(entry);
         }
+
+        List<DataResult> resultList = new ArrayList<>();
+        for (List<DatabaseEntry> group : groupedEntries.values()) {
+            resultList.add(new DataResult(group));
+        }
+
         return resultList;
     }
+
 
     /**
      * Method: getEntriesById(int id)
