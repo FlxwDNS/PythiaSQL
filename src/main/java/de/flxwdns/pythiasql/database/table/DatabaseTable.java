@@ -242,6 +242,43 @@ public final class DatabaseTable {
     }
 
     /**
+     * Method: allAsResult()
+     * <p>
+     * Retrieves the first occurrence of a DatabaseEntry from the entries list.
+     *
+     * @return List<DataResult>: A data result list containing the first occurrence of a DatabaseEntry.
+     * <p>
+     * Example usage:
+     * <p>
+     * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
+     * List<DataResult> dataResults = table.allAsResult();
+     *
+     * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
+     */
+    public List<DataResult> allAsResult() {
+        List<DataResult> resultList = new ArrayList<>();
+        Set<Integer> processedIds = new HashSet<>();
+
+        for (DatabaseEntry entry : entries) {
+            int currentId = entry.getId();
+            if (!processedIds.contains(currentId)) {
+                List<DatabaseEntry> tempList = new ArrayList<>();
+                tempList.add(entry);
+
+                for (DatabaseEntry otherEntry : entries) {
+                    if (otherEntry.getId() == currentId && otherEntry != entry) {
+                        tempList.add(otherEntry);
+                    }
+                }
+
+                resultList.add(new DataResult(tempList));
+                processedIds.add(currentId);
+            }
+        }
+        return resultList;
+    }
+
+    /**
      * Method: getEntriesById(int id)
      * <p>
      * Retrieves a list of DatabaseEntry objects from the entries list based on the specified ID.
