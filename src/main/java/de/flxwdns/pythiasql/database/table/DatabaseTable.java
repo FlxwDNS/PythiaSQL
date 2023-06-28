@@ -201,7 +201,6 @@ public final class DatabaseTable {
             }
             index++;
         }
-
         try {
             connection.executeUpdate(queryBuilder.toString());
             for (Map.Entry<String, Object> set : conditions.entrySet()) {
