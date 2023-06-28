@@ -14,7 +14,7 @@ public class DataResult {
     private final List<DatabaseEntry> entries;
 
     public String getString(String column) {
-        return (String) getObject(column);
+        return String.valueOf(getObject(column));
     }
 
     public UUID getUUID(String column) {
