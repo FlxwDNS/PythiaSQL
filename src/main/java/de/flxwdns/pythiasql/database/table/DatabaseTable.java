@@ -195,7 +195,7 @@ public final class DatabaseTable {
 
         int index = 0;
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            queryBuilder.append(entry.getKey()).append(" = `").append(entry.getValue()).append("`");
+            queryBuilder.append("'").append(entry.getKey()).append("' = '").append(entry.getValue()).append("'");
             if (index < conditions.size() - 1) {
                 queryBuilder.append(" AND ");
             }
@@ -203,6 +203,7 @@ public final class DatabaseTable {
         }
 
         try {
+            System.out.println(queryBuilder.toString());
             connection.executeUpdate(queryBuilder.toString());
             for (Map.Entry<String, Object> set : conditions.entrySet()) {
                 entries.removeIf(entry -> entry.getValue().equals(set.getValue()) && entry.getColumnName().equals(set.getKey()));
