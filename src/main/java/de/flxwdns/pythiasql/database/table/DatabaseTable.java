@@ -267,10 +267,8 @@ public final class DatabaseTable {
         for (List<DatabaseEntry> group : groupedEntries.values()) {
             resultList.add(new DataResult(group));
         }
-
         return resultList;
     }
-
 
     /**
      * Method: getEntriesById(int id)

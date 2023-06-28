@@ -18,11 +18,19 @@ public class DataResult {
     }
 
     public UUID getUUID(String column) {
-        return UUID.fromString(getString(column));
+        if(getObject(column) instanceof String value) {
+            return UUID.fromString(value);
+        }
+        System.err.println("Value is not a valid UUID!");
+        return null;
     }
 
     public boolean getBoolean(String column) {
-        return (Boolean) getObject(column);
+        if(getObject(column) instanceof Boolean value) {
+            return value;
+        }
+        System.err.println("Value is not a boolean!");
+        return false;
     }
 
     public byte getByte(String column) {
@@ -30,27 +38,31 @@ public class DataResult {
     }
 
     public short getShort(String column) {
-        return (Short) getObject(column);
+        return Short.parseShort(String.valueOf(getObject(column)));
     }
 
     public int getInt(String column) {
-        return (Integer) getObject(column);
+        return Integer.parseInt(String.valueOf(getObject(column)));
     }
 
     public long getLong(String column) {
-        return (Long) getObject(column);
+        return Long.parseLong(String.valueOf(getObject(column)));
     }
 
     public float getFloat(String column) {
-        return (Float) getObject(column);
+        return Float.parseFloat(String.valueOf(getObject(column)));
     }
 
     public double getDouble(String column) {
-        return (Double) getObject(column);
+        return Double.parseDouble(String.valueOf(getObject(column)));
     }
 
     public BigDecimal getBigDecimal(String column, int scale) {
-        return (BigDecimal) getObject(column);
+        if(getObject(column) instanceof BigDecimal value) {
+            return value;
+        }
+        System.err.println("Value is not a bigDecimal!");
+        return null;
     }
 
     /**
@@ -66,15 +78,27 @@ public class DataResult {
     }
 
     public Date getDate(String column) {
-        return (Date) getObject(column);
+        if(getObject(column) instanceof Date value) {
+            return value;
+        }
+        System.err.println("Value is not a data!");
+        return null;
     }
 
     public Time getTime(String column) {
-        return (Time) getObject(column);
+        if(getObject(column) instanceof Time value) {
+            return value;
+        }
+        System.err.println("Value is not a time!");
+        return null;
     }
 
     public Timestamp getTimestamp(String column) {
-        return (Timestamp) getObject(column);
+        if(getObject(column) instanceof Timestamp value) {
+            return value;
+        }
+        System.err.println("Value is not a timestamp!");
+        return null;
     }
 
     public Object getObject(String column) {
