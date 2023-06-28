@@ -195,7 +195,7 @@ public final class DatabaseTable {
 
         int index = 0;
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+            queryBuilder.append(entry.getKey()).append(" = `").append(entry.getValue()).append("`");
             if (index < conditions.size() - 1) {
                 queryBuilder.append(" AND ");
             }
