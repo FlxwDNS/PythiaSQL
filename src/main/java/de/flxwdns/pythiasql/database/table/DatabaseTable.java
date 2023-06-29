@@ -240,6 +240,10 @@ public final class DatabaseTable {
         return new DataResult(tempList);
     }
 
+    public boolean exists() {
+        return entries.size() > 0;
+    }
+
     /**
      * Method: allAsResult()
      * <p>
