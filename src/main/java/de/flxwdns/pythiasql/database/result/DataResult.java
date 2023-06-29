@@ -1,6 +1,7 @@
 package de.flxwdns.pythiasql.database.result;
 
 import de.flxwdns.pythiasql.database.table.DatabaseEntry;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
@@ -11,10 +12,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @SuppressWarnings("unused")
 public class DataResult {
+    @Getter
     private final List<DatabaseEntry> entries;
 
     public String getString(String column) {
-        return String.valueOf(getObject(column));
+        try {
+            return String.valueOf(getObject(column));
+        } catch (Exception e) {
+            System.err.println("Column is null and does not exist!");
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public UUID getUUID(String column) {
@@ -26,11 +34,13 @@ public class DataResult {
     }
 
     public boolean getBoolean(String column) {
-        if(getObject(column) instanceof Boolean value) {
-            return value;
+        try {
+            return Boolean.parseBoolean(getString(column));
+        } catch (Exception e) {
+            System.err.println("Value is not a boolean!");
+            e.printStackTrace();
+            return false;
         }
-        System.err.println("Value is not a boolean!");
-        return false;
     }
 
     public byte getByte(String column) {
