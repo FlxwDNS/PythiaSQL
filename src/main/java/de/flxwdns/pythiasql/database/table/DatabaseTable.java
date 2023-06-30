@@ -240,8 +240,8 @@ public final class DatabaseTable {
         return new DataResult(tempList);
     }
 
-    public boolean exists() {
-        return entries.size() > 0;
+    public boolean isEmpty() {
+        return !entries.isEmpty();
     }
 
     /**
