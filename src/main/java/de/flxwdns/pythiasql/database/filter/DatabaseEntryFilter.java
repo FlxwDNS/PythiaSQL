@@ -11,8 +11,13 @@ public class DatabaseEntryFilter {
     private Integer id;
     private String columnName;
 
-    private List<String> columns;
-    private List<Object> values;
+    private final List<String> columns;
+    private final List<Object> values;
+
+    public DatabaseEntryFilter() {
+        this.columns = new ArrayList<>();
+        this.values = new ArrayList<>();
+    }
 
     /**
      * Method: withId(Integer id)
@@ -29,10 +34,6 @@ public class DatabaseEntryFilter {
      */
     public DatabaseEntryFilter withId(Integer id) {
         this.id = id;
-
-        this.columns = new ArrayList<>();
-        this.values = new ArrayList<>();
-
         return this;
     }
 
