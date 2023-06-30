@@ -2,6 +2,7 @@ package de.flxwdns.pythiasql.database.filter;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,6 +29,10 @@ public class DatabaseEntryFilter {
      */
     public DatabaseEntryFilter withId(Integer id) {
         this.id = id;
+
+        this.columns = new ArrayList<>();
+        this.values = new ArrayList<>();
+
         return this;
     }
 
