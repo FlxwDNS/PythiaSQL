@@ -347,8 +347,15 @@ public final class DatabaseTable {
             if (filter.getColumnName() != null) {
                 return filter.getColumnName().equalsIgnoreCase(entry.getColumnName());
             }
+            filter.getColumns().forEach(it -> {
+                System.out.println("1: " + it);
+            });
+            filter.getValues().forEach(it -> {
+                System.out.println("2: " + it);
+            });
+
             if(!filter.getValues().isEmpty()) {
-                if(!(!filter.getColumns().isEmpty() && filter.getColumns().stream().anyMatch(it -> it.equalsIgnoreCase(entry.getColumnName())))) {
+                if(filter.getColumns().stream().noneMatch(it -> it.equalsIgnoreCase(entry.getColumnName()))) {
                     return false;
                 } else if(filter.getValues().stream().anyMatch(it -> it.equals(entry.getValue()))) {
                     allowedIds.add(entry.getId());
