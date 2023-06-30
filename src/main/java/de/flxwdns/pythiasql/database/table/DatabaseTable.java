@@ -110,7 +110,6 @@ public final class DatabaseTable {
                 .stream()
                 .map(o -> "'" + o + "'")
                 .toArray(String[]::new);
-        int index = entries.size();
         try {
             connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", values.keySet().toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
 
@@ -118,7 +117,7 @@ public final class DatabaseTable {
             queryBuilder.append(" WHERE ");
             index = 0;
             for (Map.Entry<String, Object> entry : values.entrySet()) {
-                queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+                queryBuilder.append("`").append(entry.getKey()).append("`='").append(entry.getValue()).append("'");
                 if (index < values.size() - 1) {
                     queryBuilder.append(" AND ");
                 }
@@ -167,7 +166,7 @@ public final class DatabaseTable {
         queryBuilder.append(" WHERE ");
         index = 0;
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+            queryBuilder.append("`").append(entry.getKey()).append("`='").append(entry.getValue()).append("'");
             if (index < conditions.size() - 1) {
                 queryBuilder.append(" AND ");
             }
