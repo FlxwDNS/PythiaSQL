@@ -9,8 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PythiaSQL {
+    private static boolean memory = true;
     private static DatabaseConnectHandler connection = null;
     private final static List<DatabaseTable> tables = new ArrayList<>();
+
+    //TODO: Description | If its on false it will not use the List!
+    @Deprecated
+    public static void memorySave(boolean value) {
+        memory = value;
+    }
 
     /**
      * Method: enable(String host, int port, String database, String user, String password)
@@ -85,6 +92,9 @@ public class PythiaSQL {
             System.err.println("[ERROR] PythiaSQL is not connected! Use enable() first!");
             return null;
         }
+        if(!memory) {
+            return getTableFromSQL(tableName);
+        }
 
         return tables.stream().filter(it -> it.getTableName().equals(tableName)).findFirst().orElseGet(() -> {
             List<String> types = new ArrayList<>();
@@ -95,28 +105,40 @@ public class PythiaSQL {
                 return null;
             }, null);
 
-           var result = connection.executeQuery("SELECT * FROM " + tableName, resultSet -> {
-                List<DatabaseEntry> values = new ArrayList<>();
-                int[] id = new int[]{0};
-                while (resultSet.next()) {
-                    types.forEach(it -> {
-                        try {
-                            values.add(new DatabaseEntry(id[0], resultSet.getObject(it), it));
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    id[0]++;
-                }
-                var table = new DatabaseTable(connection, tableName, values);
-                tables.add(table);
-                return table;
-            }, null);
-
-           if(result == null) {
-               System.err.println("[ERROR] Table " + tableName + " not found!");
-           }
-           return result;
+           return getTableFromSQL(tableName);
         });
+    }
+
+    private static DatabaseTable getTableFromSQL(String tableName) {
+        List<String> types = new ArrayList<>();
+        connection.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" + tableName + "'", resultSet -> {
+            while (resultSet.next()) {
+                types.add(resultSet.getString("COLUMN_NAME"));
+            }
+            return null;
+        }, null);
+
+        var result = connection.executeQuery("SELECT * FROM " + tableName, resultSet -> {
+            List<DatabaseEntry> values = new ArrayList<>();
+            int[] id = new int[]{0};
+            while (resultSet.next()) {
+                types.forEach(it -> {
+                    try {
+                        values.add(new DatabaseEntry(id[0], resultSet.getObject(it), it));
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                id[0]++;
+            }
+            var table = new DatabaseTable(connection, tableName, types, values);
+            tables.add(table);
+            return table;
+        }, null);
+
+        if(result == null) {
+            System.err.println("[ERROR] Table " + tableName + " not found!");
+        }
+        return result;
     }
 }

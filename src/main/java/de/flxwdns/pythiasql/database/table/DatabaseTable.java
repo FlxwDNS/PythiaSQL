@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ public final class DatabaseTable {
     private final DatabaseConnectHandler connection;
 
     private final String tableName;
+    private final List<String> types;
     private final List<DatabaseEntry> entries;
 
     /**
@@ -110,7 +113,34 @@ public final class DatabaseTable {
         int index = entries.size();
         try {
             connection.executeUpdate("INSERT INTO `" + tableName + "` (" + "`" + String.join("`, `", values.keySet().toArray(new String[]{})) + "`" + ") VALUES (" +  String.join(", ", stringArray) + ")");
-            values.forEach((key, value) -> entries.add(new DatabaseEntry(index, value, key)));
+
+            StringBuilder queryBuilder = new StringBuilder();
+            queryBuilder.append(" WHERE ");
+            index = 0;
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                queryBuilder.append(entry.getKey()).append(" = '").append(entry.getValue()).append("'");
+                if (index < values.size() - 1) {
+                    queryBuilder.append(" AND ");
+                }
+                index++;
+            }
+            connection.executeQuery("SELECT * FROM " + tableName + queryBuilder, resultSet -> {
+                List<DatabaseEntry> tempEntries = new ArrayList<>();
+                int[] id = new int[]{0};
+                while (resultSet.next()) {
+                    types.forEach(it -> {
+                        try {
+                            entries.add(new DatabaseEntry(id[0], resultSet.getObject(it), it));
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    id[0]++;
+                }
+                return null;
+            }, null);
+
+            //values.forEach((key, value) -> entries.add(new DatabaseEntry(index, value, key)));
         } catch (Exception e) {
             System.err.println("[ERROR] Error while creating entry in table " + tableName + ": " + e);
             e.printStackTrace();
@@ -333,7 +363,7 @@ public final class DatabaseTable {
         entries.forEach(entry -> {
            if(temp.stream().noneMatch(it -> it.equals(entry)) && allowedIds.stream().anyMatch(it -> it == entry.getId())) temp.add(entry);
         });
-        return new DatabaseTable(connection, tableName, temp);
+        return new DatabaseTable(connection, tableName, types, temp);
     }
 
     /**
