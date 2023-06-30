@@ -347,10 +347,10 @@ public final class DatabaseTable {
             if (filter.getColumnName() != null) {
                 return filter.getColumnName().equalsIgnoreCase(entry.getColumnName());
             }
-            if(filter.getValue() != null) {
-                if(!(filter.getColumn() != null && filter.getColumn().equalsIgnoreCase(entry.getColumnName()))) {
+            if(!filter.getValues().isEmpty()) {
+                if(!(!filter.getColumns().isEmpty() && filter.getColumns().stream().anyMatch(it -> it.equalsIgnoreCase(entry.getColumnName())))) {
                     return false;
-                } else if(filter.getValue().equals(entry.getValue())) {
+                } else if(filter.getValues().stream().anyMatch(it -> it.equals(entry.getValue()))) {
                     allowedIds.add(entry.getId());
                     return true;
                 } else {

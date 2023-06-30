@@ -2,14 +2,16 @@ package de.flxwdns.pythiasql.database.filter;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @SuppressWarnings("unused")
 public class DatabaseEntryFilter {
     private Integer id;
     private String columnName;
 
-    private String column;
-    private Object value;
+    private List<String> columns;
+    private List<Object> values;
 
     /**
      * Method: withId(Integer id)
@@ -61,7 +63,7 @@ public class DatabaseEntryFilter {
      * filter.withValue("John");
      */
     public DatabaseEntryFilter withValue(Object value) {
-        this.value = value;
+        values.add(value);
         return this;
     }
 
@@ -80,8 +82,8 @@ public class DatabaseEntryFilter {
      * filter.withValueAndColumn("John", "name");
      */
     public DatabaseEntryFilter withColumnAndValue(String column, Object value) {
-        this.column = column;
-        this.value = value;
+        columns.add(column);
+        values.add(value);
         return this;
     }
 }
