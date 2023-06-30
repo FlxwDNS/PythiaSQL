@@ -115,7 +115,7 @@ public final class DatabaseTable {
 
             StringBuilder queryBuilder = new StringBuilder();
             queryBuilder.append(" WHERE ");
-            index = 0;
+            int index = 0;
             for (Map.Entry<String, Object> entry : values.entrySet()) {
                 queryBuilder.append("`").append(entry.getKey()).append("`='").append(entry.getValue()).append("'");
                 if (index < values.size() - 1) {
