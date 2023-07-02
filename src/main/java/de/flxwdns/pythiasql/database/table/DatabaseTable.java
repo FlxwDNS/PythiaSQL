@@ -327,49 +327,38 @@ public final class DatabaseTable {
      * <p>
      * Filters the entries in the database table based on the provided filter.
      *
-     * @param filter (DatabaseEntryFilter): The filter used to specify the criteria for filtering the entries.
+     * @param values (Map<String, Object> values): The filter used to specify the criteria for filtering the entries.
      * @return DatabaseTable: A new DatabaseTable instance containing the filtered entries.
      * <p>
      * Example usage:
      * <p>
      * DatabaseTable table = new DatabaseTable(); // Example instance of the database table
-     * DatabaseEntryFilter filter = new DatabaseEntryFilter(); // Example filter object
-     * DatabaseTable filteredTable = table.filter(filter);
+     * DatabaseTable filteredTable = table.filter(Map.of("", ""));
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
-    public DatabaseTable filter(DatabaseEntryFilter filter) {
-        List<Integer> allowedIds = new ArrayList<>();
-        List<DatabaseEntry> temp = new ArrayList<>(entries.stream().filter(entry -> {
-            if (filter.getId() != null) {
-                return filter.getId() == entry.getId();
-            }
-            if (filter.getColumnName() != null) {
-                return filter.getColumnName().equalsIgnoreCase(entry.getColumnName());
-            }
-            filter.getColumns().forEach(it -> {
-                System.out.println("1: " + it);
-            });
-            filter.getValues().forEach(it -> {
-                System.out.println("2: " + it);
-            });
 
-            if(!filter.getValues().isEmpty()) {
-                if(filter.getColumns().stream().noneMatch(it -> it.equalsIgnoreCase(entry.getColumnName()))) {
-                    return false;
-                } else if(filter.getValues().stream().anyMatch(it -> it.equals(entry.getValue()))) {
-                    allowedIds.add(entry.getId());
-                    return true;
-                } else {
-                    return false;
-                }
+    public DatabaseTable filter(Map<String, Object> values) {
+        List<DatabaseEntry> filteredEntries = new ArrayList<>();
+        Map<Integer, Boolean> idFilterMap = new HashMap<>();
+
+        for (DatabaseEntry entry : entries) {
+            int entryId = entry.getId();
+
+            // Überprüfen, ob die ID bereits gefiltert wurde
+            if (idFilterMap.containsKey(entryId) && !idFilterMap.get(entryId)) {
+                continue;
             }
-            return true;
-        }).toList());
-        entries.forEach(entry -> {
-           if(temp.stream().noneMatch(it -> it.equals(entry)) && allowedIds.stream().anyMatch(it -> it == entry.getId())) temp.add(entry);
-        });
-        return new DatabaseTable(connection, tableName, types, temp);
+
+            if (matchesFilter(entry, values)) {
+                filteredEntries.add(entry);
+                idFilterMap.put(entryId, true);
+            } else {
+                idFilterMap.put(entryId, false);
+            }
+        }
+
+        return new DatabaseTable(connection, tableName, types, filteredEntries);
     }
 
     /**
@@ -382,5 +371,17 @@ public final class DatabaseTable {
     @Deprecated
     public Object getFirstValue(String column) {
         return entries.stream().filter(entry -> entry.getColumnName().equalsIgnoreCase(column)).findFirst().map(DatabaseEntry::getValue).orElse(null);
+    }
+
+    private boolean matchesFilter(DatabaseEntry entry, Map<String, Object> values) {
+        for (Map.Entry<String, Object> filterEntry : values.entrySet()) {
+            String columnName = filterEntry.getKey();
+            Object filterValue = filterEntry.getValue();
+
+            if (columnName.equals(entry.getColumnName()) && !filterValue.equals(entry.getValue())) {
+                return false; // Eintrag erfüllt nicht die Filterbedingung für diese Spalte
+            }
+        }
+        return true; // Eintrag erfüllt alle Filterbedingungen oder Spalte ist nicht im Filter enthalten
     }
 }
