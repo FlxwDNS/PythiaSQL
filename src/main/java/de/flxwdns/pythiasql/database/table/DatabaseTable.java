@@ -337,7 +337,6 @@ public final class DatabaseTable {
      *
      * Note: The behavior of this method assumes that the `entries` list has been populated with DatabaseEntry objects prior to calling this method.
      */
-
     public DatabaseTable filter(Map<String, Object> values) {
         List<DatabaseEntry> filteredEntries = new ArrayList<>();
         Map<Integer, Boolean> idFilterMap = new HashMap<>();
@@ -351,15 +350,23 @@ public final class DatabaseTable {
             }
 
             if (matchesFilter(entry, values)) {
-                filteredEntries.add(entry);
+                //filteredEntries.add(entry);
                 idFilterMap.put(entryId, true);
             } else {
                 idFilterMap.put(entryId, false);
             }
         }
 
+        entries.forEach(it -> {
+            if(idFilterMap.get(it.getId())) {
+                filteredEntries.add(it);
+            }
+        });
+
         return new DatabaseTable(connection, tableName, types, filteredEntries);
     }
+
+
 
     /**
      * Method: getFirstValue(String column)

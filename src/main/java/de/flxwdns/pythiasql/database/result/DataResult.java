@@ -112,6 +112,10 @@ public class DataResult {
     }
 
     public Object getObject(String column) {
-        return entries.stream().filter(entry -> entry.getColumnName().equalsIgnoreCase(column)).findFirst().map(DatabaseEntry::getValue).orElse(null);
+        var result = entries.stream().filter(entry -> entry.getColumnName().equalsIgnoreCase(column)).findFirst().map(DatabaseEntry::getValue).orElse(null);
+        if(result == null) {
+            System.err.println("This value does not exists!");
+        }
+        return result;
     }
 }
