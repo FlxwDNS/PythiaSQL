@@ -64,6 +64,9 @@ public class DataResult {
     }
 
     public double getDouble(String column) {
+        if(getObject(column) instanceof BigDecimal decimal) {
+            return decimal.doubleValue();
+        }
         return Double.parseDouble(String.valueOf(getObject(column)));
     }
 
