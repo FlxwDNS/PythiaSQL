@@ -270,7 +270,7 @@ public final class DatabaseTable {
     }
 
     public boolean isEmpty() {
-        return !entries.isEmpty();
+        return entries.isEmpty();
     }
 
     /**
